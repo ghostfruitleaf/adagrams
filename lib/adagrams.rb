@@ -49,4 +49,28 @@ def draw_letters()
   end
 
   return letter_bucket
-  end
+end
+
+def uses_available_letters?(input, letters_in_hand)
+  letters_copy = letters_in_hand.clone # letters_in_hand will be kept the same even if any of the letters evals to false
+  input.each_char { |o|
+    index = letters_copy.find_index(o)
+    if index.nil?
+      return false
+    else
+      letters_copy.delete_at(index)
+    end
+  }
+  return true
+end
+
+def score_word(word)
+
+  score_word = { "A" => 1, "E" => 1, "I" => 1, "O" => 1, "U" => 1, "L" => 1, "N" => 1, "R" => 1, "S" => 1, "T" => 1, "D" => 2, "G" => 2, "B" => 3, "C" => 3, "M" => 3, "P" => 3, "F" => 4, "H" => 4, "V" => 4, "W" => 4, "Y" => 4, "K" => 5, "J" => 8, "X" => 8, "Q" => 10, "Z" => 10}
+
+  score = word.length > 6 ? 8 : 0
+
+  word.each_char{|c| score += score_word[c.upcase]}
+  return score
+
+end
