@@ -51,6 +51,8 @@ def draw_letters()
   return letter_bucket
 end
 
+#verify if the letters in hand are included in the collection of available letters in the array. verify if they are an anagram of some or all of the given letters in hand.
+
 def uses_available_letters?(input, letters_in_hand)
   letters_copy = letters_in_hand.clone # letters_in_hand will be kept the same even if any of the letters evals to false
   input.each_char { |o|
@@ -64,6 +66,7 @@ def uses_available_letters?(input, letters_in_hand)
   return true
 end
 
+#using the score_word hash to find the score of each word.
 def score_word(word)
 
   score_word = { "A" => 1, "E" => 1, "I" => 1, "O" => 1, "U" => 1, "L" => 1, "N" => 1, "R" => 1, "S" => 1, "T" => 1, "D" => 2, "G" => 2, "B" => 3, "C" => 3, "M" => 3, "P" => 3, "F" => 4, "H" => 4, "V" => 4, "W" => 4, "Y" => 4, "K" => 5, "J" => 8, "X" => 8, "Q" => 10, "Z" => 10}
@@ -74,3 +77,58 @@ def score_word(word)
   return score
 
 end
+
+# Takes array of words and returns the highest scoring word (based off score_word).
+# In case of tiebreakers:
+# Priority # 1: first word that appears with 10 letters wins
+# Priority # 2: word with least amount of letters wins
+# Priority # 3: first word that appears if all words are same length
+def highest_score_from(words)
+
+  # create array of hashes containing word and score
+  word_score_hashes = words.map do |word|
+    {:word => word, :score => score_word(word)}
+  end
+
+  # find hash with winning score
+  winning_score = word_score_hashes.max_by{|word| word[:score]}
+
+  # find word(s) with same winning_score
+  winning_word = word_score_hashes.select{|word| word[:score] == winning_score[:score]}
+
+  # if winning word is array, is a tie and all words have same score
+  if winning_word.is_a?(Array)
+
+    # create variable, array or single hash, of word(s) with smallest length
+    smallest_winners = winning_word.min_by do |word|
+      word[:word].length
+    end
+
+    # only the first of these elements matter if there are multiple, so if is array we only need the first element
+    smallest_winners = smallest_winners[0] if smallest_winners.is_a?(Array)
+
+    # create variable, array or single hash, of word(s) with length 10
+    has_ten_letters = winning_word.select do |word|
+      word[:word].length == 10
+    end
+
+    # cases for returning in case of tie:
+    # no word with 10 letters
+    if has_ten_letters.empty?
+      # first appearing word with shortest length
+      return smallest_winners
+      # multiple words with ten letters
+    elsif has_ten_letters.is_a?(Array)
+      # return first that appears
+      return has_ten_letters[0]
+      # otherwise, only one word has 10 letters and auto-wins
+    else
+      return has_ten_letters
+    end
+
+  end
+
+  # return for when only one high score found
+  return winning_word
+end
+
