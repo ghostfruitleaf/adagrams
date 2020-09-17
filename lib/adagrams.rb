@@ -3,6 +3,9 @@
 # Week 3 - Adagrams Pair Programming Project - adagrams.rb
 # 09/18/2020
 
+# for english dict
+require "csv"
+
 def draw_letters()
   # array of hash of hashes where letter points to key/value pairs for max # allowed and # used up in draw
   letter_array =[{"A"=>{"max_num" => 9,"num_used" => 0}},
@@ -51,12 +54,12 @@ def draw_letters()
   return letter_bucket
 end
 
-#verify if the letters in hand are included in the collection of available letters in the array. verify if they are an anagram of some or all of the given letters in hand.
+# verify if the letters in hand are included in the collection of available letters in the array. verify if they are an anagram of some or all of the given letters in hand.
 
 def uses_available_letters?(input, letters_in_hand)
   letters_copy = letters_in_hand.clone # letters_in_hand will be kept the same even if any of the letters evals to false
   input.each_char { |o|
-    index = letters_copy.find_index(o)
+    index = letters_copy.find_index(o.upcase)
     if index.nil?
       return false
     else
@@ -132,3 +135,9 @@ def highest_score_from(words)
   return winning_word
 end
 
+def is_in_english_dict?(input)
+  eng_dict = CSV.read('assets/dictionary-english.csv')
+  eng_dict.shift
+  eng_dict.flatten!
+  return eng_dict.include? input.downcase
+end
